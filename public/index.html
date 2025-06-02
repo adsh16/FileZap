@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FileZap - File Sharing</title>
+    <link rel="stylesheet" href="/public/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🗂️ FileZap</h1>
+            <p>Upload and share your files easily!</p>
+        </header>
+        
+        <main>
+            <div class="upload-area" id="dropArea">
+                <input type="file" id="fileInput" multiple style="display: none;">
+                <div class="upload-content">
+                    <div class="upload-icon">📁</div>
+                    <p>Drop files here or <button type="button" class="choose-btn" onclick="document.getElementById('fileInput').click()">Choose Files</button></p>
+                    <small>Support for multiple files • Max 50MB per file</small>
+                </div>
+            </div>
+            
+            <div id="fileList" class="file-list"></div>
+            <button id="uploadBtn" class="upload-btn" style="display: none;">Upload Files</button>
+            <div id="status" class="status"></div>
+        </main>
+    </div>
+
+    <script src="/public/script.js"></script>
+</body>
+</html>
