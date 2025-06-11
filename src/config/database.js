@@ -1,9 +1,9 @@
 const { MongoClient, ServerApiVersion, GridFSBucket } = require('mongodb');
 require('dotenv').config(); // Load environment variables from .env file
 
-// const uri =`mongodb+srv://${MONGODB_USERNAME}:${MONGODB_PASSWORD}@${MONGODB_CLUSTER}/?authSource=${authSource}&authMechanism=${authMechanism}`;
-// const uri =`mongodb+srv://adi:${process.env.MONGODB_PASSWORD}@cluster0.xwovo4e.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"`;
-const uri = `mongodb+srv://adi:${encodeURIComponent(process.env.MONGODB_PASSWORD)}@cluster0.xwovo4e.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
+
+// Use the correct username and encode the password
+const uri = `mongodb+srv://${process.env.MONGODB_USERNAME}:${encodeURIComponent(process.env.MONGODB_PASSWORD)}@${process.env.MONGODB_CLUSTER}/?retryWrites=true&w=majority&appName=${process.env.MONGODB_APP_NAME}`;
 
 const client = new MongoClient(uri, {
     serverApi: {
@@ -14,15 +14,16 @@ const client = new MongoClient(uri, {
 });
 
 let db;
-let bucket;
+let bucket_files, bucket_batch;
 
 async function connectDB() {
     try {
         await client.connect();
         db = client.db("filezap");
-        bucket = new GridFSBucket(db, { bucketName: 'uploads' });
+        bucket_files = new GridFSBucket(db, { bucketName: 'files' });
+        bucket_batch = new GridFSBucket(db, { bucketName: 'batch' });
         console.log("✅ Connected to MongoDB!");
-        
+
         // Test the connection
         await db.command({ ping: 1 });
         console.log("✅ Database ping successful!");
@@ -39,11 +40,20 @@ function getDB() {
     return db;
 }
 
-function getBucket() {
-    if (!bucket) {
-        throw new Error('GridFS bucket not initialized');
+function getBucket(type) {
+    if(type == "files"){
+        if (!bucket_files) {
+            throw new Error('Files bucket not initialized');
+        }
+        return bucket_files;
     }
-    return bucket;
+    else if(type == "batch"){
+        if (!bucket_batch) {
+            throw new Error('Batch bucket not initialized');
+        }
+        // Handle batch operations if needed
+        return bucket_batch;
+    }
 }
 
 module.exports = {

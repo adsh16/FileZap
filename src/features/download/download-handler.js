@@ -1,38 +1,29 @@
-const { ObjectId } = require('mongodb');
-const { getBucket, getDB } = require('../../config/database');
+const { ObjectId } = require("mongodb");
+const { getBucket, getDB } = require("../../config/database");
 
 async function handleDownload(fileId, res) {
-    try {
-        const bucket = getBucket();
-        const db = getDB();
-        
-        const downloadStream = bucket.openDownloadStream(new ObjectId(fileId));
-        
-        // Get file info
-        const fileInfo = await db.collection('uploads.files').findOne({ _id: new ObjectId(fileId) });
-        
-        if (!fileInfo) {            res.writeHead(404, { 'Content-Type': 'text/plain' });
-            res.end('File not found');
-            return;
-        }
+  if(fileId.startsWith("batch-")) {
+    // Handle batch download
+    let batchId = fileId.replace("batch-", "");
+    await batchDownload(batchId, res);
+  }
+}
 
-        res.writeHead(200, {
-            'Content-Type': fileInfo.metadata?.mimetype || 'application/octet-stream',
-            'Content-Disposition': `attachment; filename="${fileInfo.filename}"`,
-            'Content-Length': fileInfo.length
-        });
-
-        downloadStream.pipe(res);
-        
-        downloadStream.on('error', () => {
-            res.writeHead(404, { 'Content-Type': 'text/plain' });
-            res.end('File not found');
-        });
-    } catch (error) {
-        console.error('Download error:', error);
-        res.writeHead(500, { 'Content-Type': 'text/plain' });
-        res.end('Download failed');
-    }
+async function batchDownload(batchId, res) {
+  try {
+    const db = getDB();
+    const batch_bucket = getBucket("batch");
+    const files_bucket = getBucket("files");
+    
+    // find entry in batch_bucket with given batchId
+    // get the files array from the entry
+    // for each file in the files array containting the uri, get the file from files_bucket and start the download stream
+    
+  } catch (error) {
+    console.error('Error getting database or bucket:', error);
+    res.status(500).json({ error: 'Internal server error' });
+    return;
+  }
 }
 
 module.exports = { handleDownload };
