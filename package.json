@@ -4,10 +4,11 @@
   "description": "File sharing system",
   "main": "app.js",
   "scripts": {
-    "start": "node src/app.js",
-    "dev": "nodemon app.js"
+    "start": "node backend/src/app.js",
+    "dev": "nodemon backend/src/app.js"
   },
   "dependencies": {
+    "archiver": "^7.0.1",
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
     "express": "^4.21.2",
